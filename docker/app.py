@@ -26,7 +26,7 @@ def zip_directory(output_folder, zip_filename):
 
 @app.route('/')
 def index():
-    return render_template('index-test.html')
+    return render_template('index.html')
 
 @app.route('/extract', methods=['POST'])
 def extract():
