@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extraction de fichiers embarqués PDF</title>
+</head>
+<body>
+    <h1>Extraction de fichiers embarqués PDF</h1>
+    <form action="/extract" method="POST">
+        <label for="pdf_folder">Dossier des fichiers PDF :</label><br>
+        <input type="text" id="pdf_folder" name="pdf_folder" placeholder="Chemin du dossier PDF"><br><br>
+
+        <label for="output_folder">Dossier de sortie :</label><br>
+        <input type="text" id="output_folder" name="output_folder" placeholder="Chemin du dossier de sortie"><br><br>
+
+        <button type="submit">Exécuter l'extraction</button>
+    </form>
+</body>
+</html>
