@@ -1,7 +1,17 @@
-Prerequis
-fitz
-frontend
-tools
+build sur linux
 
-python3 -m venv env
-source env/bin/activate
+pyinstaller \
+  --clean \
+  --noconfirm \
+  --onefile \
+  --windowed \
+  --add-data "templates:templates" \
+  app.py
+
+build sur windows
+
+pyinstaller ^
+--onefile ^
+--windowed ^
+--add-data "templates;templates" ^
+app.py
