@@ -1,2 +1,5 @@
-python/static
-python/env
+env
+dist
+build
+poetry.lock
+app.spec

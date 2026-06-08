@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PDF Embedded Extractor</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#07152b;
+    --card:#0d1b33;
+    --border:#1f3a63;
+    --primary:#2563eb;
+    --primary-hover:#1d4ed8;
+    --text:#ffffff;
+    --muted:#94a3b8;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        radial-gradient(circle at top left,#1e40af30,transparent 35%),
+        radial-gradient(circle at bottom right,#0ea5e930,transparent 35%),
+        var(--bg);
+    color:var(--text);
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:750px;
+}
+
+.card{
+    background:rgba(10,20,40,.92);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:30px;
+    padding:45px;
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.45);
+}
+
+.header{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.logo{
+    font-size:60px;
+    margin-bottom:15px;
+}
+
+h1{
+    font-size:2rem;
+    margin-bottom:12px;
+}
+
+.subtitle{
+    color:var(--muted);
+    line-height:1.7;
+}
+
+.drop-zone{
+    width:100%;
+    min-height:240px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    border:2px dashed #3b82f6;
+    border-radius:22px;
+
+    text-align:center;
+    cursor:pointer;
+
+    padding:40px 25px;
+    transition:.3s;
+
+    background:rgba(59,130,246,.03);
+}
+
+.drop-zone:hover{
+    border-color:#60a5fa;
+    background:rgba(59,130,246,.08);
+}
+
+.drop-zone.dragover{
+    border-color:#93c5fd;
+    background:rgba(59,130,246,.12);
+}
+
+.drop-icon{
+    font-size:60px;
+    margin-bottom:15px;
+}
+
+.drop-title{
+    font-size:1.2rem;
+    font-weight:600;
+}
+
+.drop-subtitle{
+    margin-top:8px;
+    color:var(--muted);
+}
+
+#fileInput{
+    display:none;
+}
+
+.file-info{
+    margin-top:20px;
+    background:rgba(37,99,235,.12);
+    padding:15px;
+    border-radius:12px;
+    text-align:center;
+    color:#93c5fd;
+    font-weight:600;
+}
+
+button{
+    width:100%;
+    margin-top:22px;
+
+    border:none;
+    border-radius:14px;
+
+    padding:16px;
+    font-size:16px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    color:white;
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #1d4ed8
+    );
+
+    transition:.3s;
+}
+
+button:hover:not(:disabled){
+    transform:translateY(-2px);
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.loader{
+    display:none;
+    text-align:center;
+    margin-top:20px;
+}
+
+.spinner{
+    width:42px;
+    height:42px;
+    margin:auto;
+
+    border:4px solid rgba(255,255,255,.1);
+    border-top:4px solid #3b82f6;
+    border-radius:50%;
+
+    animation:spin 1s linear infinite;
+}
+
+.loading-text{
+    margin-top:12px;
+    color:var(--muted);
+}
+
+.footer{
+    margin-top:30px;
+    text-align:center;
+    color:#64748b;
+    font-size:13px;
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+@media(max-width:768px){
+
+    .card{
+        padding:25px;
+    }
+
+    h1{
+        font-size:1.5rem;
+    }
+
+    .drop-zone{
+        min-height:200px;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="header">
+            <div class="logo">📎</div>
+
+            <h1>PDF Embedded Extractor</h1>
+
+            <p class="subtitle">
+                Extraction automatique des pièces jointes et
+                fichiers embarqués dans vos documents PDF.
+            </p>
+        </div>
+
+        <form
+            id="uploadForm"
+            action="/extract"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            <label class="drop-zone" id="dropZone">
+
+                <div class="drop-icon">📂</div>
+
+                <div class="drop-title">
+                    Glissez-déposez vos PDF ici
+                </div>
+
+                <div class="drop-subtitle">
+                    ou cliquez pour sélectionner un dossier
+                </div>
+
+     <input
+    type="file"
+    id="fileInput"
+    name="pdf_folder"
+    accept=".pdf"
+    multiple
+>
+            </label>
+
+            <div class="file-info" id="fileInfo">
+                Aucun fichier sélectionné
+            </div>
+
+            <button id="extractBtn" disabled>
+                🚀 Extraire les fichiers embarqués
+            </button>
+
+            <div class="loader" id="loader">
+
+                <div class="spinner"></div>
+
+                <div class="loading-text">
+                    Analyse des PDF en cours...
+                </div>
+
+            </div>
+
+        </form>
+
+        <div class="footer">
+            Powered by Flask • PyMuPDF • Embedded File Extraction
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+const fileInfo = document.getElementById("fileInfo");
+const extractBtn = document.getElementById("extractBtn");
+const uploadForm = document.getElementById("uploadForm");
+const loader = document.getElementById("loader");
+
+dropZone.addEventListener("click", () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener("change", updateFileInfo);
+
+function updateFileInfo(){
+
+    const count = fileInput.files.length;
+
+    if(count === 0){
+        fileInfo.textContent = "Aucun fichier sélectionné";
+        extractBtn.disabled = true;
+        return;
+    }
+
+    fileInfo.textContent =
+        `✅ ${count} fichier${count > 1 ? "s" : ""} sélectionné${count > 1 ? "s" : ""}`;
+
+    extractBtn.disabled = false;
+}
+
+dropZone.addEventListener("dragover", e => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+});
+
+dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("dragover");
+});
+
+dropZone.addEventListener("drop", e => {
+
+    e.preventDefault();
+
+    dropZone.classList.remove("dragover");
+
+    fileInput.files = e.dataTransfer.files;
+
+    updateFileInfo();
+});
+
+uploadForm.addEventListener("submit", () => {
+
+    loader.style.display = "block";
+
+    extractBtn.disabled = true;
+
+    extractBtn.innerHTML =
+        "⏳ Traitement en cours...";
+});
+
+</script>
+
+</body>
+</html>
